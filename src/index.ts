@@ -1,43 +1,47 @@
 export function gameOfLife(board) {
-  let newGenerationBoard = [];
 
-  board.forEach((row, rowIndex) => {
-    pushNewGenerationRow(newGenerationBoard, [board, rowIndex, row]);
-  });
+  return board.map(
+    (row, rowIndex) => { return getNewGenerationRow(board, rowIndex, row); }
+  );
 
-  return newGenerationBoard;
 }
 
-export function pushNewGenerationRow(newGenerationBoard, [board, rowIndex, row]) {
-  let newGenerationRow = [];
+export function getNewGenerationRow(board, rowIndex, row) {
 
-  row.forEach((cell, cellIndex) => {
-    pushNewGenerationCell(newGenerationRow, [board, rowIndex, cellIndex, cell]);
-  });
+  return row.map(
+    (cell, cellIndex) => { return getNewGenerationCell(board, rowIndex, cellIndex, cell); }
+  );
 
-  newGenerationBoard.push(newGenerationRow);
 }
 
-export function pushNewGenerationCell(newGenerationRow, [board, rowIndex, cellIndex, cell]) {
-  let nbNeighbors = countNeighbors(board, rowIndex, cellIndex);
+export function getNewGenerationCell(board, rowIndex, cellIndex, cell) {
 
-  if (cell > 0) {
-    if (nbNeighbors < 2) newGenerationRow.push(0);
-    else if (nbNeighbors < 4) newGenerationRow.push(1);
-    else newGenerationRow.push(0);
-  } else if (nbNeighbors == 3) {
-    newGenerationRow.push(1);
-  } else {
-    newGenerationRow.push(0);
+  return livesOrDies(cell, countNeighbors(board, rowIndex, cellIndex));
+
+}
+
+export function livesOrDies(cell, nbNeighbors) {
+  if (isAlive(cell)) {
+    if (nbNeighbors < 2) return dead();
+    else if (nbNeighbors < 4) return alive();
+    else return dead();
   }
+  else {
+    if (nbNeighbors == 3) return alive();
+    else return dead();
+  };
 }
 
 export function countNeighbors(board, rowIndex, cellIndex) {
   let count = 0;
 
-  if (rowIndex > 0) count += countNeighborsInOtherRow(board, rowIndex - 1, cellIndex);
+  if (rowIndex > 0)
+    count += countNeighborsInOtherRow(board, rowIndex - 1, cellIndex);
+
   count += countNeighborsInSameRow(board, rowIndex, cellIndex);
-  if (rowIndex < board.length - 1) count += countNeighborsInOtherRow(board, rowIndex + 1, cellIndex);
+
+  if (rowIndex < board.length - 1)
+    count += countNeighborsInOtherRow(board, rowIndex + 1, cellIndex);
 
   return count;
 }
@@ -46,18 +50,37 @@ export function countNeighborsInOtherRow(board, rowIndex, cellIndex) {
   let count = 0;
   let row = board[rowIndex];
 
-  if (cellIndex > 0) count += row[cellIndex - 1] > 0 ? 1 : 0;
-  count += row[cellIndex] > 0 ? 1 : 0;
-  if (cellIndex < row.length - 1) count += row[cellIndex + 1] > 0 ? 1 : 0;
+  if (cellIndex > 0)
+    if (isAlive(row[cellIndex - 1]))
+      count++;
+
+  if (isAlive(row[cellIndex]))
+    count++;
+
+  if (cellIndex < row.length - 1)
+    if (isAlive(row[cellIndex + 1]))
+      count++;
 
   return count;
 }
+
 export function countNeighborsInSameRow(board, rowIndex, cellIndex) {
   let count = 0;
   let row = board[rowIndex];
 
-  if (cellIndex > 0) count += row[cellIndex - 1] > 0 ? 1 : 0;
-  if (cellIndex < row.length - 1) count += row[cellIndex + 1] > 0 ? 1 : 0;
+  if (cellIndex > 0)
+    if (isAlive(row[cellIndex - 1]))
+      count++;
+
+  if (cellIndex < row.length - 1)
+    if (isAlive(row[cellIndex + 1]))
+      count++;
 
   return count;
 }
+
+function isAlive(cell) { return cell > 0; }
+
+function alive() { return 1; }
+
+function dead() { return 0; }
