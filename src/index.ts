@@ -1,86 +1,88 @@
-export function gameOfLife(board) {
+export function gameOfLife(game) {
+  let extendedGame = [];
+  let nextGame = [];
 
-  return board.map(
-    (row, rowIndex) => { return getNewGenerationRow(board, rowIndex, row); }
-  );
+  game.forEach((cell) => {
+    extendedGame.push([cell, true]);
+  });
 
+  game.forEach((cell) => {
+    extendGame(extendedGame, getNeighborhood(cell));
+  });
+
+  extendedGame.forEach((cellWithStatus) => {
+    let nbLiveNeighbors = countLiveNeighbors(cellWithStatus[0], extendedGame);
+    if (isAlive(cellWithStatus)) {
+      if (staysAlive(nbLiveNeighbors)) nextGame.push(cellWithStatus[0]);
+    }
+    else {
+      if (becomesAlive(nbLiveNeighbors)) nextGame.push(cellWithStatus[0]);
+    }
+  });
+
+  return nextGame;
 }
 
-export function getNewGenerationRow(board, rowIndex, row) {
-
-  return row.map(
-    (cell, cellIndex) => { return getNewGenerationCell(board, rowIndex, cellIndex, cell); }
-  );
-
+export function getNeighborhood(cell) {
+  return cellNeighborhood.map((neighbor) => {
+    return [
+      cell[0] + neighbor[0],
+      cell[1] + neighbor[1],
+    ]
+  })
 }
 
-export function getNewGenerationCell(board, rowIndex, cellIndex, cell) {
-
-  return livesOrDies(cell, countNeighbors(board, rowIndex, cellIndex));
-
+export function extendGame(extendedGame, neighborhood) {
+  neighborhood.forEach((cell) => {
+    if (!isInExtendedGame(cell, extendedGame)) extendedGame.push([cell, false])
+  });
 }
 
-export function livesOrDies(cell, nbNeighbors) {
-  if (isAlive(cell)) {
-    if (nbNeighbors < 2) return dead();
-    else if (nbNeighbors < 4) return alive();
-    else return dead();
+export function isInExtendedGame(cell, extendedGame) {
+  for (let index = 0; index < extendedGame.length; index++) {
+    if ((cell[0] === extendedGame[index][0][0]) && (cell[1] === extendedGame[index][0][1])) return true;
   }
-  else {
-    if (nbNeighbors == 3) return alive();
-    else return dead();
-  };
+  return false;
 }
 
-export function countNeighbors(board, rowIndex, cellIndex) {
-  let count = 0;
-
-  if (rowIndex > 0)
-    count += countNeighborsInOtherRow(board, rowIndex - 1, cellIndex);
-
-  count += countNeighborsInSameRow(board, rowIndex, cellIndex);
-
-  if (rowIndex < board.length - 1)
-    count += countNeighborsInOtherRow(board, rowIndex + 1, cellIndex);
-
-  return count;
+export function getSquareDistance(cell0, cell1) {
+  let deltaY = cell1[0] - cell0[0];
+  let deltaX = cell1[1] - cell0[1];
+  return deltaX * deltaX + deltaY * deltaY;
 }
 
-export function countNeighborsInOtherRow(board, rowIndex, cellIndex) {
-  let count = 0;
-  let row = board[rowIndex];
+export function countLiveNeighbors(cell, extendedGame) {
+  let nbLiveNeighbors = 0;
 
-  if (cellIndex > 0)
-    if (isAlive(row[cellIndex - 1]))
-      count++;
+  extendedGame.forEach((cellWithStatus) => {
+    if (isAlive(cellWithStatus)) {
+      let squareDistance = getSquareDistance(cell, cellWithStatus[0]);
+      if ((squareDistance === 1) || (squareDistance === 2)) nbLiveNeighbors++;
+    }
+  });
 
-  if (isAlive(row[cellIndex]))
-    count++;
-
-  if (cellIndex < row.length - 1)
-    if (isAlive(row[cellIndex + 1]))
-      count++;
-
-  return count;
+  return nbLiveNeighbors;
 }
 
-export function countNeighborsInSameRow(board, rowIndex, cellIndex) {
-  let count = 0;
-  let row = board[rowIndex];
-
-  if (cellIndex > 0)
-    if (isAlive(row[cellIndex - 1]))
-      count++;
-
-  if (cellIndex < row.length - 1)
-    if (isAlive(row[cellIndex + 1]))
-      count++;
-
-  return count;
+export function staysAlive(nbNeighbors) {
+  return (nbNeighbors == 2) || (nbNeighbors == 3);
 }
 
-function isAlive(cell) { return cell > 0; }
+export function becomesAlive(nbNeighbors) {
+  return (nbNeighbors == 3);
+}
 
-function alive() { return 1; }
+function isAlive(cell) {
+  return cell[1];
+}
 
-function dead() { return 0; }
+const cellNeighborhood = [
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
+];
