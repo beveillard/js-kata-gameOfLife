@@ -7,96 +7,111 @@ import {
   staysAlive,
   becomesAlive,
   gameOfLife,
+  Cell,
+  Position,
 } from ".";
 
-describe("Test of isInGameArea()", function () {
+describe("Test of isInExtendedGame", function () {
 
-  it("Should return false", function () {
-    expect(
-      isInExtendedGame([1, 1], [])
-    ).toEqual(false);
+  it("is not in extended game", function () {
+    // Given
+    let position = { y: 1, x: 1 };
+    let extendedGame = [];
+    // When
+    let result = isInExtendedGame(extendedGame, position);
+    // Then
+    expect(result).toEqual(false);
   });
 
-  it("Should return false", function () {
-    expect(
-      isInExtendedGame(
-        [1, 1],
-        [
-          [[0, 0], undefined],
-        ]
-      )
-    ).toEqual(false);
+  it("is not in extended game", function () {
+    // Given
+    let position = { y: 1, x: 1 };
+    let extendedGame = [
+      { position: { y: 0, x: 0 }, alive: undefined },
+    ];
+    // When
+    let result = isInExtendedGame(extendedGame, position);
+    // Then
+    expect(result).toEqual(false);
   });
 
-  it("Should return true", function () {
-    expect(
-      isInExtendedGame(
-        [1, 1],
-        [
-          [[0, 0], undefined],
-          [[1, 1], undefined],
-        ]
-      )
-    ).toEqual(true);
+  it("is in extended game", function () {
+    // Given
+    let position = { y: 1, x: 1 };
+    let extendedGame = [
+      { position: { y: 0, x: 0 }, alive: undefined },
+      { position: { y: 1, x: 1 }, alive: undefined },
+    ];
+    // When
+    let result = isInExtendedGame(extendedGame, position);
+    // Then
+    expect(result).toEqual(true);
   });
 
 });
 
-describe("Test of extendGameArea()", function () {
+describe("Test of extendGameArea", function () {
 
   it("Shouldn't extend game area", function () {
-    let gameArea =
+    // Given
+    let gameArea: Array<Cell> =
       [
-        [[0, 0], true],
+        { position: { y: 0, x: 0 }, alive: true },
       ];
+    // When
     extendGame(
       gameArea,
       [
-        [0, 0],
+        { y: 0, x: 0 },
       ]
     );
+    // Then
     expect(gameArea).toEqual(
       [
-        [[0, 0], true],
+        { position: { y: 0, x: 0 }, alive: true },
       ]
     );
   });
 
   it("Should extend game area", function () {
-    let gameArea =
+    // Given
+    let gameArea: Array<Cell> =
       [
-        [[0, 0], true],
+        { position: { y: 0, x: 0 }, alive: true },
       ];
+    // When
     extendGame(
       gameArea,
       [
-        [0, 1],
+        { y: 0, x: 1 },
       ]
     );
+    // Then
     expect(gameArea).toEqual(
       [
-        [[0, 0], true],
-        [[0, 1], false],
+        { position: { y: 0, x: 0 }, alive: true },
+        { position: { y: 0, x: 1 }, alive: false },
       ]
     );
   });
+
 });
 
-describe("Test of getCellNeighborhood()", function () {
+describe("Test of getCellNeighborhood", function () {
 
   it("Should return neighborhood", function () {
     expect(
-      getNeighborhood([1, 1])
+      getNeighborhood({ y: 1, x: 1 })
     ).toEqual(
       [
-        [0, 0],
-        [0, 1],
-        [0, 2],
-        [1, 0],
-        [1, 2],
-        [2, 0],
-        [2, 1],
-        [2, 2],
+        { y: 0, x: 0 },
+        { y: 0, x: 1 },
+        { y: 0, x: 2 },
+        { y: 1, x: 0 },
+        { y: 1, x: 2 },
+        { y: 2, x: 0 },
+        { y: 2, x: 1 },
+        { y: 2, x: 2 },
       ]
     );
   });
@@ -106,19 +121,19 @@ describe("Test of getCellNeighborhood()", function () {
 describe("Test of getSquareDistance()", function () {
 
   it("Should return 0", function () {
-    expect(getSquareDistance([0, 0], [0, 0])).toEqual(0);
+    expect(getSquareDistance({ y: 0, x: 0 }, { y: 0, x: 0 })).toEqual(0);
   });
 
   it("Should return 1", function () {
-    expect(getSquareDistance([0, 0], [1, 0])).toEqual(1);
+    expect(getSquareDistance({ y: 0, x: 0 }, { y: 1, x: 0 })).toEqual(1);
   });
 
   it("Should return 2", function () {
-    expect(getSquareDistance([0, 0], [1, -1])).toEqual(2);
+    expect(getSquareDistance({ y: 0, x: 0 }, { y: 1, x: -1 })).toEqual(2);
   });
 
   it("Should return 5", function () {
-    expect(getSquareDistance([0, 0], [1, -2])).toEqual(5);
+    expect(getSquareDistance({ y: 0, x: 0 }, { y: 1, x: -2 })).toEqual(5);
   });
 });
 
@@ -126,27 +141,27 @@ describe("Test of countLiveNeighbors()", function () {
 
   it("Should return 0", function () {
     expect(countLiveNeighbors(
-      [0, 0],
+      { y: 0, x: 0 },
       [
-        [[0, 0], true],
+        { position: { y: 0, x: 0 }, alive: true },
       ]
     )).toEqual(0);
   });
 
   it("Should return 0", function () {
     expect(countLiveNeighbors(
-      [0, 0],
+      { y: 0, x: 0 },
       [
-        [[0, 1], false],
+        { position: { y: 0, x: 1 }, alive: false },
       ]
     )).toEqual(0);
   });
 
   it("Should return 1", function () {
     expect(countLiveNeighbors(
-      [0, 0],
+      { y: 0, x: 0 },
       [
-        [[0, 1], true],
+        { position: { y: 0, x: 1 }, alive: true },
       ]
     )).toEqual(1);
   });
@@ -171,7 +186,7 @@ describe("Test of staysAlive()", function () {
     expect(staysAlive(3)).toEqual(true);
   });
 
-  it("Should die due to overpopulation", function () {
+  it("Should die due to overpopulation (4)", function () {
     expect(staysAlive(4)).toEqual(false);
   });
 
@@ -191,11 +206,11 @@ describe("Test of becomesAlive()", function () {
     expect(becomesAlive(2)).toEqual(false);
   });
 
-  it("Should reproduce", function () {
+  it("Should become alive (3)", function () {
     expect(becomesAlive(3)).toEqual(true);
   });
 
-  it("Should stay dead", function () {
+  it("Should stay dead (4)", function () {
     expect(becomesAlive(4)).toEqual(false);
   });
 
@@ -204,22 +219,28 @@ describe("Test of becomesAlive()", function () {
 describe("Test basics of gameOfLife()", function () {
 
   it("Should stay dead", function () {
-    const start = [0, 0];
-    const end = [3, 3];
+    // Given
+    const start = { y: 0, x: 0 };
+    const end = { y: 3, x: 3 };
     const generation0 = [];
+    // When
     let generation1 = gameOfLife(generation0);
+    // Then
     expect(generation1).toEqual(generation0);
   });
 
   it("Should die", function () {
-    const start = [0, 0];
-    const end = [3, 3];
+    // Given
+    const start = { y: 0, x: 0 };
+    const end = { y: 3, x: 3 };
     const generation0 =
       [
-        [1, 1],
-        [1, 2],
+        { y: 1, x: 1 },
+        { y: 1, x: 2 },
       ];
+    // When
     let generation1 = gameOfLife(generation0);
+    // Then
     expect(generation1).toEqual([]);
   });
 
@@ -228,88 +249,103 @@ describe("Test basics of gameOfLife()", function () {
 describe("Test Still lifes", function () {
 
   it("Block", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [3, 3];
+    const start = { y: 0, x: 0 };
+    const end = { y: 3, x: 3 };
     const generation0 =
       [
-        [1, 1],
-        [1, 2],
-        [2, 1],
-        [2, 2],
+        { y: 1, x: 1 },
+        { y: 1, x: 2 },
+        { y: 2, x: 1 },
+        { y: 2, x: 2 },
       ];
-    let generation1 = gameOfLife(generation0);
     displayGame(generation0, start, end, log);
+    // When
+    let generation1 = gameOfLife(generation0);
+    // Then
     expect(generation1).toEqual(generation0);
   });
 
   it("Bee-hive", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [4, 5];
+    const start = { y: 0, x: 0 };
+    const end = { y: 4, x: 5 };
     const generation0 =
       [
-        [1, 2],
-        [1, 3],
-        [2, 1],
-        [2, 4],
-        [3, 2],
-        [3, 3],
+        { y: 1, x: 2 },
+        { y: 1, x: 3 },
+        { y: 2, x: 1 },
+        { y: 2, x: 4 },
+        { y: 3, x: 2 },
+        { y: 3, x: 3 },
       ];
-    let generation1 = gameOfLife(generation0);
     displayGame(generation0, start, end, log);
+    // When
+    let generation1 = gameOfLife(generation0);
+    // Then
     expect(generation1).toEqual(generation0);
   });
 
   it("Loaf", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [5, 5];
+    const start = { y: 0, x: 0 };
+    const end = { y: 5, x: 5 };
     const generation0 =
       [
-        [1, 2],
-        [1, 3],
-        [2, 1],
-        [2, 4],
-        [3, 2],
-        [3, 4],
-        [4, 3],
+        { y: 1, x: 2 },
+        { y: 1, x: 3 },
+        { y: 2, x: 1 },
+        { y: 2, x: 4 },
+        { y: 3, x: 2 },
+        { y: 3, x: 4 },
+        { y: 4, x: 3 },
       ];
-    let generation1 = gameOfLife(generation0);
     displayGame(generation0, start, end, log);
+    // When
+    let generation1 = gameOfLife(generation0);
+    // Then
     expect(generation1).toEqual(generation0);
   });
 
   it("Boat", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [4, 4];
+    const start = { y: 0, x: 0 };
+    const end = { y: 4, x: 4 };
     const generation0 =
       [
-        [1, 1],
-        [1, 2],
-        [2, 1],
-        [2, 3],
-        [3, 2],
+        { y: 1, x: 1 },
+        { y: 1, x: 2 },
+        { y: 2, x: 1 },
+        { y: 2, x: 3 },
+        { y: 3, x: 2 },
       ];
-    let generation1 = gameOfLife(generation0);
     displayGame(generation0, start, end, log);
+    // When
+    let generation1 = gameOfLife(generation0);
+    // Then
     expect(generation1).toEqual(generation0);
   });
 
   it("Tub", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [4, 4];
+    const start = { y: 0, x: 0 };
+    const end = { y: 4, x: 4 };
     const generation0 =
       [
-        [1, 2],
-        [2, 1],
-        [2, 3],
-        [3, 2],
+        { y: 1, x: 2 },
+        { y: 2, x: 1 },
+        { y: 2, x: 3 },
+        { y: 3, x: 2 },
       ];
-    let generation1 = gameOfLife(generation0);
     displayGame(generation0, start, end, log);
+    // When
+    let generation1 = gameOfLife(generation0);
+    // Then
     expect(generation1).toEqual(generation0);
   });
 
@@ -318,169 +354,184 @@ describe("Test Still lifes", function () {
 describe("Test Oscillators", function () {
 
   it("Blinker", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [4, 4];
+    const start = { y: 0, x: 0 };
+    const end = { y: 4, x: 4 };
     const generation0 =
       [
-        [2, 1],
-        [2, 2],
-        [2, 3],
+        { y: 2, x: 1 },
+        { y: 2, x: 2 },
+        { y: 2, x: 3 },
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
-    expect(generation2.sort()).toEqual(generation0.sort());
+    // Then
+    expect(generation2.sort(comparePositions)).toEqual(generation0.sort(comparePositions));
   });
 
   it("Toad", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [5, 5];
+    const start = { y: 0, x: 0 };
+    const end = { y: 5, x: 5 };
     const generation0 =
       [
-        [2, 2],
-        [2, 3],
-        [2, 4],
-        [3, 1],
-        [3, 2],
-        [3, 3],
+        { y: 2, x: 2 },
+        { y: 2, x: 3 },
+        { y: 2, x: 4 },
+        { y: 3, x: 1 },
+        { y: 3, x: 2 },
+        { y: 3, x: 3 },
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
-    expect(generation2.sort()).toEqual(generation0.sort());
+    // Then
+    expect(generation2.sort(comparePositions)).toEqual(generation0.sort(comparePositions));
   });
 
   it("Beacon", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [5, 5];
+    const start = { y: 0, x: 0 };
+    const end = { y: 5, x: 5 };
     const generation0 =
       [
-        [1, 1],
-        [1, 2],
-        [2, 1],
-        [3, 4],
-        [4, 3],
-        [4, 4],
+        { y: 1, x: 1 },
+        { y: 1, x: 2 },
+        { y: 2, x: 1 },
+        { y: 3, x: 4 },
+        { y: 4, x: 3 },
+        { y: 4, x: 4 },
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
-    expect(generation2.sort()).toEqual(generation0.sort());
+    // Then
+    expect(generation2.sort(comparePositions)).toEqual(generation0.sort(comparePositions));
   });
 
   it("Pulsar", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [16, 16];
+    const start = { y: 0, x: 0 };
+    const end = { y: 16, x: 16 };
     const generation0 =
       [
-        [2, 4],
-        [2, 5],
-        [2, 6],
-        [2, 10],
-        [2, 11],
-        [2, 12],
+        { y: 2, x: 4 },
+        { y: 2, x: 5 },
+        { y: 2, x: 6 },
+        { y: 2, x: 10 },
+        { y: 2, x: 11 },
+        { y: 2, x: 12 },
 
-        [4, 2],
-        [4, 7],
-        [4, 9],
-        [4, 14],
-        [5, 2],
-        [5, 7],
-        [5, 9],
-        [5, 14],
-        [6, 2],
-        [6, 7],
-        [6, 9],
-        [6, 14],
+        { y: 4, x: 2 },
+        { y: 4, x: 7 },
+        { y: 4, x: 9 },
+        { y: 4, x: 14 },
+        { y: 5, x: 2 },
+        { y: 5, x: 7 },
+        { y: 5, x: 9 },
+        { y: 5, x: 14 },
+        { y: 6, x: 2 },
+        { y: 6, x: 7 },
+        { y: 6, x: 9 },
+        { y: 6, x: 14 },
 
-        [7, 4],
-        [7, 5],
-        [7, 6],
-        [7, 10],
-        [7, 11],
-        [7, 12],
+        { y: 7, x: 4 },
+        { y: 7, x: 5 },
+        { y: 7, x: 6 },
+        { y: 7, x: 10 },
+        { y: 7, x: 11 },
+        { y: 7, x: 12 },
 
-        [9, 4],
-        [9, 5],
-        [9, 6],
-        [9, 10],
-        [9, 11],
-        [9, 12],
+        { y: 9, x: 4 },
+        { y: 9, x: 5 },
+        { y: 9, x: 6 },
+        { y: 9, x: 10 },
+        { y: 9, x: 11 },
+        { y: 9, x: 12 },
 
-        [10, 2],
-        [10, 7],
-        [10, 9],
-        [10, 14],
-        [11, 2],
-        [11, 7],
-        [11, 9],
-        [11, 14],
-        [12, 2],
-        [12, 7],
-        [12, 9],
-        [12, 14],
+        { y: 10, x: 2 },
+        { y: 10, x: 7 },
+        { y: 10, x: 9 },
+        { y: 10, x: 14 },
+        { y: 11, x: 2 },
+        { y: 11, x: 7 },
+        { y: 11, x: 9 },
+        { y: 11, x: 14 },
+        { y: 12, x: 2 },
+        { y: 12, x: 7 },
+        { y: 12, x: 9 },
+        { y: 12, x: 14 },
 
-        [14, 4],
-        [14, 5],
-        [14, 6],
-        [14, 10],
-        [14, 11],
-        [14, 12],
+        { y: 14, x: 4 },
+        { y: 14, x: 5 },
+        { y: 14, x: 6 },
+        { y: 14, x: 10 },
+        { y: 14, x: 11 },
+        { y: 14, x: 12 },
 
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
     let generation3 = gameOfLife(generation2);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
     displayGame(generation3, start, end, log);
-    expect(generation3.sort()).toEqual(generation0.sort());
+    // Then
+    expect(generation3.sort(comparePositions)).toEqual(generation0.sort(comparePositions));
   });
 
   it("Penta-decathlon", function () {
+    // Given
     const log = false;
-    const start = [0, 0];
-    const end = [17, 10];
+    const start = { y: 0, x: 0 };
+    const end = { y: 17, x: 10 };
     const generation0 =
       [
-        [3, 4],
-        [3, 5],
-        [3, 6],
+        { y: 3, x: 4 },
+        { y: 3, x: 5 },
+        { y: 3, x: 6 },
 
-        [4, 3],
-        [4, 7],
-        [5, 3],
-        [5, 7],
+        { y: 4, x: 3 },
+        { y: 4, x: 7 },
+        { y: 5, x: 3 },
+        { y: 5, x: 7 },
 
-        [6, 4],
-        [6, 5],
-        [6, 6],
+        { y: 6, x: 4 },
+        { y: 6, x: 5 },
+        { y: 6, x: 6 },
 
-        [11, 4],
-        [11, 5],
-        [11, 6],
+        { y: 11, x: 4 },
+        { y: 11, x: 5 },
+        { y: 11, x: 6 },
 
-        [12, 3],
-        [12, 7],
-        [13, 3],
-        [13, 7],
+        { y: 12, x: 3 },
+        { y: 12, x: 7 },
+        { y: 13, x: 3 },
+        { y: 13, x: 7 },
 
-        [14, 4],
-        [14, 5],
-        [14, 6],
+        { y: 14, x: 4 },
+        { y: 14, x: 5 },
+        { y: 14, x: 6 },
 
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
     let generation3 = gameOfLife(generation2);
@@ -496,7 +547,6 @@ describe("Test Oscillators", function () {
     let generation13 = gameOfLife(generation12);
     let generation14 = gameOfLife(generation13);
     let generation15 = gameOfLife(generation14);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
     displayGame(generation3, start, end, log);
@@ -512,7 +562,8 @@ describe("Test Oscillators", function () {
     displayGame(generation13, start, end, log);
     displayGame(generation14, start, end, log);
     displayGame(generation15, start, end, log);
-    expect(generation15.sort()).toEqual(generation0.sort());
+    // Then
+    expect(generation15.sort(comparePositions)).toEqual(generation0.sort(comparePositions));
   });
 
 });
@@ -520,140 +571,158 @@ describe("Test Oscillators", function () {
 describe("Test Spaceships", function () {
 
   it("Glider", function () {
+    // Given
     const log = false;
-    const start = [-1, -1];
-    const end = [4, 4];
+    const start = { y: -1, x: -1 };
+    const end = { y: 4, x: 4 };
+    const shift = { y: 1, x: 1 };
     const generation0 =
       [
-        [0, 2],
-        [1, 0],
-        [1, 2],
-        [2, 1],
-        [2, 2],
+        { y: 0, x: 2 },
+        { y: 1, x: 0 },
+        { y: 1, x: 2 },
+        { y: 2, x: 1 },
+        { y: 2, x: 2 },
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
     let generation3 = gameOfLife(generation2);
     let generation4 = gameOfLife(generation3);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
     displayGame(generation3, start, end, log);
     displayGame(generation4, start, end, log);
-    expect(generation4.sort()).toEqual(shiftGame(generation0, [1, 1]).sort());
+    // Then
+    expect(generation4.sort(comparePositions)).toEqual(shiftGame(generation0, shift).sort(comparePositions));
   });
 
   it("Light-weight spaceship", function () {
+    // Given
     const log = false;
-    const start = [-1, 0];
-    const end = [4, 7];
+    const start = { y: -1, x: 0 };
+    const end = { y: 4, x: 7 };
+    const shift = { y: 0, x: 2 };
     const generation0 =
       [
-        [0, 0],
-        [0, 3],
-        [1, 4],
-        [2, 0],
-        [2, 4],
-        [3, 1],
-        [3, 2],
-        [3, 3],
-        [3, 4],
+        { y: 0, x: 0 },
+        { y: 0, x: 3 },
+        { y: 1, x: 4 },
+        { y: 2, x: 0 },
+        { y: 2, x: 4 },
+        { y: 3, x: 1 },
+        { y: 3, x: 2 },
+        { y: 3, x: 3 },
+        { y: 3, x: 4 },
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
     let generation3 = gameOfLife(generation2);
     let generation4 = gameOfLife(generation3);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
     displayGame(generation3, start, end, log);
     displayGame(generation4, start, end, log);
-    expect(generation4.sort()).toEqual(shiftGame(generation0, [0, 2]).sort());
+    // Then
+    expect(generation4.sort(comparePositions)).toEqual(shiftGame(generation0, shift).sort(comparePositions));
   });
 
   it("Middle-weight spaceship", function () {
+    // Given
     const log = false;
-    const start = [-1, 0];
-    const end = [4, 7];
+    const start = { y: -2, x: 0 };
+    const end = { y: 4, x: 7 };
+    const shift = { y: 0, x: 2 };
     const generation0 =
       [
-        [0, 1],
-        [0, 2],
-        [0, 3],
-        [0, 4],
-        [0, 5],
-        [1, 0],
-        [1, 5],
-        [2, 5],
-        [3, 0],
-        [3, 4],
-        [4, 2],
+        { y: 0, x: 1 },
+        { y: 0, x: 2 },
+        { y: 0, x: 3 },
+        { y: 0, x: 4 },
+        { y: 0, x: 5 },
+        { y: 1, x: 0 },
+        { y: 1, x: 5 },
+        { y: 2, x: 5 },
+        { y: 3, x: 0 },
+        { y: 3, x: 4 },
+        { y: 4, x: 2 },
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
     let generation3 = gameOfLife(generation2);
     let generation4 = gameOfLife(generation3);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
     displayGame(generation3, start, end, log);
     displayGame(generation4, start, end, log);
-    expect(generation4.sort()).toEqual(shiftGame(generation0, [0, 2]).sort());
+    // Then
+    expect(generation4.sort(comparePositions)).toEqual(shiftGame(generation0, shift).sort(comparePositions));
   });
 
   it("Heavy-weight spaceship", function () {
+    // Given
     const log = false;
-    const start = [-1, 0];
-    const end = [4, 7];
+    const start = { y: 0, x: 0 };
+    const end = { y: 6, x: 8 };
+    const shift = { y: 0, x: 2 };
     const generation0 =
       [
-        [0, 2],
-        [0, 3],
-        [1, 0],
-        [1, 5],
-        [2, 6],
-        [3, 0],
-        [3, 6],
-        [4, 1],
-        [4, 2],
-        [4, 3],
-        [4, 4],
-        [4, 5],
-        [4, 6],
+        { y: 0, x: 2 },
+        { y: 0, x: 3 },
+        { y: 1, x: 0 },
+        { y: 1, x: 5 },
+        { y: 2, x: 6 },
+        { y: 3, x: 0 },
+        { y: 3, x: 6 },
+        { y: 4, x: 1 },
+        { y: 4, x: 2 },
+        { y: 4, x: 3 },
+        { y: 4, x: 4 },
+        { y: 4, x: 5 },
+        { y: 4, x: 6 },
       ];
+    displayGame(generation0, start, end, log);
+    // When
     let generation1 = gameOfLife(generation0);
     let generation2 = gameOfLife(generation1);
     let generation3 = gameOfLife(generation2);
     let generation4 = gameOfLife(generation3);
-    displayGame(generation0, start, end, log);
     displayGame(generation1, start, end, log);
     displayGame(generation2, start, end, log);
     displayGame(generation3, start, end, log);
     displayGame(generation4, start, end, log);
-    expect(generation4.sort()).toEqual(shiftGame(generation0, [0, 2]).sort());
+    // Then
+    expect(generation4.sort(comparePositions)).toEqual(shiftGame(generation0, shift).sort(comparePositions));
   });
 
 });
 
-function displayGame(game, start, end, log) {
-  let dy = end[0] - start[0] + 1;
-  let dx = end[1] - start[1] + 1;
+function displayGame(game: Array<Position>, start: Position, end: Position, log: boolean) {
+  if (!log)
+    return;
 
-  let board = new Array(dy).fill([]).map((cell) => {
-    let line = new Array(dx);
-    return line.fill(0);
+  let dy = end.y - start.y + 1;
+  let dx = end.x - start.x + 1;
+
+  let board = new Array(dy).fill(undefined).map(() => {
+    return new Array(dx).fill(0);
   });
 
-  let y, x;
-  game.forEach((cell) => {
-    y = cell[0] - start[0];
-    x = cell[1] - start[1];
+  let y: number, x: number;
+  game.forEach((position) => {
+    y = position.y - start.y;
+    x = position.x - start.x;
     if (x >= 0 && y >= 0 && x < dx && y < dy) board[y][x] = 1;
   });
 
   let string = "";
   board.forEach((line) => {
-    string += "-";
+    string += "- ";
     line.forEach((cell) => {
       if (cell == 0) string += "  ";
       else string += "* ";
@@ -661,11 +730,19 @@ function displayGame(game, start, end, log) {
     string += "-\n";
   })
 
-  if (log) console.log(string);
+  console.log(string);
 }
 
-function shiftGame(game, shift) {
-  return game.map((cell) => {
-    return [cell[0] + shift[0], cell[1] + shift[1]];
+function shiftGame(game: Array<Position>, shift: Position): Array<Position> {
+  return game.map((position) => {
+    return { y: position.y + shift.y, x: position.x + shift.x };
   });
+}
+
+function comparePositions(a: Position, b: Position) {
+  if (a.y < b.y) return -1;
+  if (a.y > b.y) return +1;
+  if (a.x < b.x) return -1;
+  if (a.x > b.x) return +1;
+  return 0;
 }

@@ -1,62 +1,73 @@
-export function gameOfLife(game) {
-  let extendedGame = [];
+export class Position {
+  y: number;
+  x: number;
+}
+
+export class Cell {
+  position: Position;
+  alive: boolean;
+}
+
+export function gameOfLife(game: Array<Position>): Array<Position> {
+  let extendedGame: Array<Cell> = [];
   let nextGame = [];
 
-  game.forEach((cell) => {
-    extendedGame.push([cell, true]);
+  game.forEach((position) => {
+    extendedGame.push({ position: position, alive: true });
   });
 
-  game.forEach((cell) => {
-    extendGame(extendedGame, getNeighborhood(cell));
+  game.forEach((position) => {
+    extendGame(extendedGame, getNeighborhood(position));
   });
 
-  extendedGame.forEach((cellWithStatus) => {
-    let nbLiveNeighbors = countLiveNeighbors(cellWithStatus[0], extendedGame);
-    if (isAlive(cellWithStatus)) {
-      if (staysAlive(nbLiveNeighbors)) nextGame.push(cellWithStatus[0]);
+  extendedGame.forEach((cell) => {
+    let nbLiveNeighbors = countLiveNeighbors(cell.position, extendedGame);
+    if (cell.alive) {
+      if (staysAlive(nbLiveNeighbors)) nextGame.push(cell.position);
     }
     else {
-      if (becomesAlive(nbLiveNeighbors)) nextGame.push(cellWithStatus[0]);
+      if (becomesAlive(nbLiveNeighbors)) nextGame.push(cell.position);
     }
   });
 
   return nextGame;
 }
 
-export function getNeighborhood(cell) {
+export function getNeighborhood(position: Position): Array<Position> {
   return cellNeighborhood.map((neighbor) => {
-    return [
-      cell[0] + neighbor[0],
-      cell[1] + neighbor[1],
-    ]
+    return {
+      y: position.y + neighbor.y,
+      x: position.x + neighbor.x,
+    }
   })
 }
 
-export function extendGame(extendedGame, neighborhood) {
-  neighborhood.forEach((cell) => {
-    if (!isInExtendedGame(cell, extendedGame)) extendedGame.push([cell, false])
+export function extendGame(extendedGame: Array<Cell>, neighborhood: Array<Position>) {
+  neighborhood.forEach((position) => {
+    if (!isInExtendedGame(extendedGame, position)) extendedGame.push({ position: position, alive: false })
   });
 }
 
-export function isInExtendedGame(cell, extendedGame) {
+export function isInExtendedGame(extendedGame: Array<Cell>, position: Position): boolean {
   for (let index = 0; index < extendedGame.length; index++) {
-    if ((cell[0] === extendedGame[index][0][0]) && (cell[1] === extendedGame[index][0][1])) return true;
+    if ((position.y === extendedGame[index].position.y) && (position.x === extendedGame[index].position.x))
+      return true;
   }
   return false;
 }
 
-export function getSquareDistance(cell0, cell1) {
-  let deltaY = cell1[0] - cell0[0];
-  let deltaX = cell1[1] - cell0[1];
+export function getSquareDistance(position0: Position, position1: Position): number {
+  let deltaY = position1.y - position0.y;
+  let deltaX = position1.x - position0.x;
   return deltaX * deltaX + deltaY * deltaY;
 }
 
-export function countLiveNeighbors(cell, extendedGame) {
+export function countLiveNeighbors(position: Position, extendedGame: Array<Cell>): number {
   let nbLiveNeighbors = 0;
 
-  extendedGame.forEach((cellWithStatus) => {
-    if (isAlive(cellWithStatus)) {
-      let squareDistance = getSquareDistance(cell, cellWithStatus[0]);
+  extendedGame.forEach((cell) => {
+    if (cell.alive) {
+      let squareDistance = getSquareDistance(position, cell.position);
       if ((squareDistance === 1) || (squareDistance === 2)) nbLiveNeighbors++;
     }
   });
@@ -64,25 +75,21 @@ export function countLiveNeighbors(cell, extendedGame) {
   return nbLiveNeighbors;
 }
 
-export function staysAlive(nbNeighbors) {
+export function staysAlive(nbNeighbors: number): boolean {
   return (nbNeighbors == 2) || (nbNeighbors == 3);
 }
 
-export function becomesAlive(nbNeighbors) {
+export function becomesAlive(nbNeighbors: number): boolean {
   return (nbNeighbors == 3);
 }
 
-function isAlive(cell) {
-  return cell[1];
-}
-
-const cellNeighborhood = [
-  [-1, -1],
-  [-1, 0],
-  [-1, 1],
-  [0, -1],
-  [0, 1],
-  [1, -1],
-  [1, 0],
-  [1, 1],
+const cellNeighborhood: Array<Position> = [
+  { y: -1, x: -1 },
+  { y: -1, x: 0 },
+  { y: -1, x: 1 },
+  { y: 0, x: -1 },
+  { y: 0, x: 1 },
+  { y: 1, x: -1 },
+  { y: 1, x: 0 },
+  { y: 1, x: 1 },
 ];
