@@ -1,59 +1,74 @@
-export class Position {
+export interface Position {
   y: number;
   x: number;
 }
 
-export class Cell {
+export interface Cell {
   position: Position;
   alive: boolean;
 }
 
-export function gameOfLife(game: Array<Position>): Array<Position> {
-  let extendedGame: Array<Cell> = [];
-  let nextGame = [];
+export function gameOfLife(game: Position[]): Position[] {
+  const aliveGame: Cell[] = game.map(toLiveCell);
 
-  game.forEach((position) => {
-    extendedGame.push({ position: position, alive: true });
-  });
+  const neighbors: Cell[] = game.map((position) => getNeighbors(position).map(toDeadCell)).reduce(concat, []); // flatten cf. Lodash
 
-  game.forEach((position) => {
-    extendGame(extendedGame, getNeighborhood(position));
-  });
-
-  extendedGame.forEach((cell) => {
-    let nbLiveNeighbors = countLiveNeighbors(cell.position, extendedGame);
-    if (cell.alive) {
-      if (staysAlive(nbLiveNeighbors)) nextGame.push(cell.position);
+  const extendedGame: Cell[] = neighbors.reduce((acc, cur) => {
+    if (!isInExtendedGame(acc, cur.position)) {
+      return [...acc, cur];
     }
-    else {
-      if (becomesAlive(nbLiveNeighbors)) nextGame.push(cell.position);
-    }
-  });
+    return acc;
+  }, aliveGame);
 
-  return nextGame;
+  return extendedGame.reduce((acc, { position, alive }) => {
+    const nbLiveNeighbors = countLiveNeighbors(position, extendedGame);
+
+    if ((alive && staysAlive(nbLiveNeighbors)) || (!alive && becomesAlive(nbLiveNeighbors))) {
+      return [...acc, position];
+    }
+
+    return acc;
+  }, []);
 }
 
-export function getNeighborhood(position: Position): Array<Position> {
-  return cellNeighborhood.map((neighbor) => {
+function toLiveCell(position: Position): Cell {
+  return { position, alive: true };
+}
+
+function toDeadCell(position: Position): Cell {
+  return { position, alive: false };
+}
+
+function concat<T>(acc: T[], cur: T[]): T[] {
+  return [...acc, ...cur];
+}
+
+export function getNeighbors(position: Position): Position[] {
+  return CELL_NEIGHBORS.map((neighbor) => {
     return {
       y: position.y + neighbor.y,
       x: position.x + neighbor.x,
-    }
-  })
-}
-
-export function extendGame(extendedGame: Array<Cell>, neighborhood: Array<Position>) {
-  neighborhood.forEach((position) => {
-    if (!isInExtendedGame(extendedGame, position)) extendedGame.push({ position: position, alive: false })
+    };
   });
 }
 
-export function isInExtendedGame(extendedGame: Array<Cell>, position: Position): boolean {
-  for (let index = 0; index < extendedGame.length; index++) {
-    if ((position.y === extendedGame[index].position.y) && (position.x === extendedGame[index].position.x))
-      return true;
+export function isInExtendedGame(extendedGame: Cell[], positionToLookFor: Position): boolean {
+  return extendedGame.map(getPosition)
+    .map(comparePositions(positionToLookFor)).reduce(or, false);
+}
+
+function getPosition({ position }: Cell): Position {
+  return position
+}
+
+function comparePositions(p1: Position) {
+  return function comparePositions(p2: Position): boolean {
+    return p1.x === p2.x && p1.y === p2.y;
   }
-  return false;
+}
+
+function or(b1: boolean, b2: boolean): boolean {
+  return b1 || b2;
 }
 
 export function getSquareDistance(position0: Position, position1: Position): number {
@@ -62,13 +77,13 @@ export function getSquareDistance(position0: Position, position1: Position): num
   return deltaX * deltaX + deltaY * deltaY;
 }
 
-export function countLiveNeighbors(position: Position, extendedGame: Array<Cell>): number {
+export function countLiveNeighbors(position: Position, extendedGame: Cell[]): number {
   let nbLiveNeighbors = 0;
 
   extendedGame.forEach((cell) => {
     if (cell.alive) {
       let squareDistance = getSquareDistance(position, cell.position);
-      if ((squareDistance === 1) || (squareDistance === 2)) nbLiveNeighbors++;
+      if (squareDistance === 1 || squareDistance === 2) nbLiveNeighbors++;
     }
   });
 
@@ -76,14 +91,14 @@ export function countLiveNeighbors(position: Position, extendedGame: Array<Cell>
 }
 
 export function staysAlive(nbNeighbors: number): boolean {
-  return (nbNeighbors == 2) || (nbNeighbors == 3);
+  return nbNeighbors == 2 || nbNeighbors == 3;
 }
 
 export function becomesAlive(nbNeighbors: number): boolean {
-  return (nbNeighbors == 3);
+  return nbNeighbors == 3;
 }
 
-const cellNeighborhood: Array<Position> = [
+const CELL_NEIGHBORS: Position[] = [
   { y: -1, x: -1 },
   { y: -1, x: 0 },
   { y: -1, x: 1 },

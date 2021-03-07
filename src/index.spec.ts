@@ -1,18 +1,15 @@
 import {
   isInExtendedGame,
-  extendGame,
-  getNeighborhood,
+  getNeighbors,
   getSquareDistance,
   countLiveNeighbors,
   staysAlive,
   becomesAlive,
   gameOfLife,
-  Cell,
   Position,
 } from ".";
 
 describe("Test of isInExtendedGame", function () {
-
   it("is not in extended game", function () {
     // Given
     let position = { y: 1, x: 1 };
@@ -26,9 +23,7 @@ describe("Test of isInExtendedGame", function () {
   it("is not in extended game", function () {
     // Given
     let position = { y: 1, x: 1 };
-    let extendedGame = [
-      { position: { y: 0, x: 0 }, alive: undefined },
-    ];
+    let extendedGame = [{ position: { y: 0, x: 0 }, alive: undefined }];
     // When
     let result = isInExtendedGame(extendedGame, position);
     // Then
@@ -47,79 +42,24 @@ describe("Test of isInExtendedGame", function () {
     // Then
     expect(result).toEqual(true);
   });
-
-});
-
-describe("Test of extendGameArea", function () {
-
-  it("Shouldn't extend game area", function () {
-    // Given
-    let gameArea: Array<Cell> =
-      [
-        { position: { y: 0, x: 0 }, alive: true },
-      ];
-    // When
-    extendGame(
-      gameArea,
-      [
-        { y: 0, x: 0 },
-      ]
-    );
-    // Then
-    expect(gameArea).toEqual(
-      [
-        { position: { y: 0, x: 0 }, alive: true },
-      ]
-    );
-  });
-
-  it("Should extend game area", function () {
-    // Given
-    let gameArea: Array<Cell> =
-      [
-        { position: { y: 0, x: 0 }, alive: true },
-      ];
-    // When
-    extendGame(
-      gameArea,
-      [
-        { y: 0, x: 1 },
-      ]
-    );
-    // Then
-    expect(gameArea).toEqual(
-      [
-        { position: { y: 0, x: 0 }, alive: true },
-        { position: { y: 0, x: 1 }, alive: false },
-      ]
-    );
-  });
-
 });
 
 describe("Test of getCellNeighborhood", function () {
-
   it("Should return neighborhood", function () {
-    expect(
-      getNeighborhood({ y: 1, x: 1 })
-    ).toEqual(
-      [
-        { y: 0, x: 0 },
-        { y: 0, x: 1 },
-        { y: 0, x: 2 },
-        { y: 1, x: 0 },
-        { y: 1, x: 2 },
-        { y: 2, x: 0 },
-        { y: 2, x: 1 },
-        { y: 2, x: 2 },
-      ]
-    );
+    expect(getNeighbors({ y: 1, x: 1 })).toEqual([
+      { y: 0, x: 0 },
+      { y: 0, x: 1 },
+      { y: 0, x: 2 },
+      { y: 1, x: 0 },
+      { y: 1, x: 2 },
+      { y: 2, x: 0 },
+      { y: 2, x: 1 },
+      { y: 2, x: 2 },
+    ]);
   });
-
 });
 
 describe("Test of getSquareDistance()", function () {
-
   it("Should return 0", function () {
     expect(getSquareDistance({ y: 0, x: 0 }, { y: 0, x: 0 })).toEqual(0);
   });
@@ -138,38 +78,20 @@ describe("Test of getSquareDistance()", function () {
 });
 
 describe("Test of countLiveNeighbors()", function () {
-
   it("Should return 0", function () {
-    expect(countLiveNeighbors(
-      { y: 0, x: 0 },
-      [
-        { position: { y: 0, x: 0 }, alive: true },
-      ]
-    )).toEqual(0);
+    expect(countLiveNeighbors({ y: 0, x: 0 }, [{ position: { y: 0, x: 0 }, alive: true }])).toEqual(0);
   });
 
   it("Should return 0", function () {
-    expect(countLiveNeighbors(
-      { y: 0, x: 0 },
-      [
-        { position: { y: 0, x: 1 }, alive: false },
-      ]
-    )).toEqual(0);
+    expect(countLiveNeighbors({ y: 0, x: 0 }, [{ position: { y: 0, x: 1 }, alive: false }])).toEqual(0);
   });
 
   it("Should return 1", function () {
-    expect(countLiveNeighbors(
-      { y: 0, x: 0 },
-      [
-        { position: { y: 0, x: 1 }, alive: true },
-      ]
-    )).toEqual(1);
+    expect(countLiveNeighbors({ y: 0, x: 0 }, [{ position: { y: 0, x: 1 }, alive: true }])).toEqual(1);
   });
-
 });
 
 describe("Test of staysAlive()", function () {
-
   it("Should die due to underpopulation (0)", function () {
     expect(staysAlive(0)).toEqual(false);
   });
@@ -189,11 +111,9 @@ describe("Test of staysAlive()", function () {
   it("Should die due to overpopulation (4)", function () {
     expect(staysAlive(4)).toEqual(false);
   });
-
 });
 
 describe("Test of becomesAlive()", function () {
-
   it("Should stay dead (0)", function () {
     expect(becomesAlive(0)).toEqual(false);
   });
@@ -213,11 +133,9 @@ describe("Test of becomesAlive()", function () {
   it("Should stay dead (4)", function () {
     expect(becomesAlive(4)).toEqual(false);
   });
-
 });
 
 describe("Test basics of gameOfLife()", function () {
-
   it("Should stay dead", function () {
     // Given
     const start = { y: 0, x: 0 };
@@ -233,33 +151,29 @@ describe("Test basics of gameOfLife()", function () {
     // Given
     const start = { y: 0, x: 0 };
     const end = { y: 3, x: 3 };
-    const generation0 =
-      [
-        { y: 1, x: 1 },
-        { y: 1, x: 2 },
-      ];
+    const generation0 = [
+      { y: 1, x: 1 },
+      { y: 1, x: 2 },
+    ];
     // When
     let generation1 = gameOfLife(generation0);
     // Then
     expect(generation1).toEqual([]);
   });
-
 });
 
 describe("Test Still lifes", function () {
-
   it("Block", function () {
     // Given
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 3, x: 3 };
-    const generation0 =
-      [
-        { y: 1, x: 1 },
-        { y: 1, x: 2 },
-        { y: 2, x: 1 },
-        { y: 2, x: 2 },
-      ];
+    const generation0 = [
+      { y: 1, x: 1 },
+      { y: 1, x: 2 },
+      { y: 2, x: 1 },
+      { y: 2, x: 2 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -272,15 +186,14 @@ describe("Test Still lifes", function () {
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 4, x: 5 };
-    const generation0 =
-      [
-        { y: 1, x: 2 },
-        { y: 1, x: 3 },
-        { y: 2, x: 1 },
-        { y: 2, x: 4 },
-        { y: 3, x: 2 },
-        { y: 3, x: 3 },
-      ];
+    const generation0 = [
+      { y: 1, x: 2 },
+      { y: 1, x: 3 },
+      { y: 2, x: 1 },
+      { y: 2, x: 4 },
+      { y: 3, x: 2 },
+      { y: 3, x: 3 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -293,16 +206,15 @@ describe("Test Still lifes", function () {
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 5, x: 5 };
-    const generation0 =
-      [
-        { y: 1, x: 2 },
-        { y: 1, x: 3 },
-        { y: 2, x: 1 },
-        { y: 2, x: 4 },
-        { y: 3, x: 2 },
-        { y: 3, x: 4 },
-        { y: 4, x: 3 },
-      ];
+    const generation0 = [
+      { y: 1, x: 2 },
+      { y: 1, x: 3 },
+      { y: 2, x: 1 },
+      { y: 2, x: 4 },
+      { y: 3, x: 2 },
+      { y: 3, x: 4 },
+      { y: 4, x: 3 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -315,14 +227,13 @@ describe("Test Still lifes", function () {
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 4, x: 4 };
-    const generation0 =
-      [
-        { y: 1, x: 1 },
-        { y: 1, x: 2 },
-        { y: 2, x: 1 },
-        { y: 2, x: 3 },
-        { y: 3, x: 2 },
-      ];
+    const generation0 = [
+      { y: 1, x: 1 },
+      { y: 1, x: 2 },
+      { y: 2, x: 1 },
+      { y: 2, x: 3 },
+      { y: 3, x: 2 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -335,35 +246,31 @@ describe("Test Still lifes", function () {
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 4, x: 4 };
-    const generation0 =
-      [
-        { y: 1, x: 2 },
-        { y: 2, x: 1 },
-        { y: 2, x: 3 },
-        { y: 3, x: 2 },
-      ];
+    const generation0 = [
+      { y: 1, x: 2 },
+      { y: 2, x: 1 },
+      { y: 2, x: 3 },
+      { y: 3, x: 2 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
     // Then
     expect(generation1).toEqual(generation0);
   });
-
 });
 
 describe("Test Oscillators", function () {
-
   it("Blinker", function () {
     // Given
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 4, x: 4 };
-    const generation0 =
-      [
-        { y: 2, x: 1 },
-        { y: 2, x: 2 },
-        { y: 2, x: 3 },
-      ];
+    const generation0 = [
+      { y: 2, x: 1 },
+      { y: 2, x: 2 },
+      { y: 2, x: 3 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -379,15 +286,14 @@ describe("Test Oscillators", function () {
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 5, x: 5 };
-    const generation0 =
-      [
-        { y: 2, x: 2 },
-        { y: 2, x: 3 },
-        { y: 2, x: 4 },
-        { y: 3, x: 1 },
-        { y: 3, x: 2 },
-        { y: 3, x: 3 },
-      ];
+    const generation0 = [
+      { y: 2, x: 2 },
+      { y: 2, x: 3 },
+      { y: 2, x: 4 },
+      { y: 3, x: 1 },
+      { y: 3, x: 2 },
+      { y: 3, x: 3 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -403,15 +309,14 @@ describe("Test Oscillators", function () {
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 5, x: 5 };
-    const generation0 =
-      [
-        { y: 1, x: 1 },
-        { y: 1, x: 2 },
-        { y: 2, x: 1 },
-        { y: 3, x: 4 },
-        { y: 4, x: 3 },
-        { y: 4, x: 4 },
-      ];
+    const generation0 = [
+      { y: 1, x: 1 },
+      { y: 1, x: 2 },
+      { y: 2, x: 1 },
+      { y: 3, x: 4 },
+      { y: 4, x: 3 },
+      { y: 4, x: 4 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -427,63 +332,61 @@ describe("Test Oscillators", function () {
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 16, x: 16 };
-    const generation0 =
-      [
-        { y: 2, x: 4 },
-        { y: 2, x: 5 },
-        { y: 2, x: 6 },
-        { y: 2, x: 10 },
-        { y: 2, x: 11 },
-        { y: 2, x: 12 },
+    const generation0 = [
+      { y: 2, x: 4 },
+      { y: 2, x: 5 },
+      { y: 2, x: 6 },
+      { y: 2, x: 10 },
+      { y: 2, x: 11 },
+      { y: 2, x: 12 },
 
-        { y: 4, x: 2 },
-        { y: 4, x: 7 },
-        { y: 4, x: 9 },
-        { y: 4, x: 14 },
-        { y: 5, x: 2 },
-        { y: 5, x: 7 },
-        { y: 5, x: 9 },
-        { y: 5, x: 14 },
-        { y: 6, x: 2 },
-        { y: 6, x: 7 },
-        { y: 6, x: 9 },
-        { y: 6, x: 14 },
+      { y: 4, x: 2 },
+      { y: 4, x: 7 },
+      { y: 4, x: 9 },
+      { y: 4, x: 14 },
+      { y: 5, x: 2 },
+      { y: 5, x: 7 },
+      { y: 5, x: 9 },
+      { y: 5, x: 14 },
+      { y: 6, x: 2 },
+      { y: 6, x: 7 },
+      { y: 6, x: 9 },
+      { y: 6, x: 14 },
 
-        { y: 7, x: 4 },
-        { y: 7, x: 5 },
-        { y: 7, x: 6 },
-        { y: 7, x: 10 },
-        { y: 7, x: 11 },
-        { y: 7, x: 12 },
+      { y: 7, x: 4 },
+      { y: 7, x: 5 },
+      { y: 7, x: 6 },
+      { y: 7, x: 10 },
+      { y: 7, x: 11 },
+      { y: 7, x: 12 },
 
-        { y: 9, x: 4 },
-        { y: 9, x: 5 },
-        { y: 9, x: 6 },
-        { y: 9, x: 10 },
-        { y: 9, x: 11 },
-        { y: 9, x: 12 },
+      { y: 9, x: 4 },
+      { y: 9, x: 5 },
+      { y: 9, x: 6 },
+      { y: 9, x: 10 },
+      { y: 9, x: 11 },
+      { y: 9, x: 12 },
 
-        { y: 10, x: 2 },
-        { y: 10, x: 7 },
-        { y: 10, x: 9 },
-        { y: 10, x: 14 },
-        { y: 11, x: 2 },
-        { y: 11, x: 7 },
-        { y: 11, x: 9 },
-        { y: 11, x: 14 },
-        { y: 12, x: 2 },
-        { y: 12, x: 7 },
-        { y: 12, x: 9 },
-        { y: 12, x: 14 },
+      { y: 10, x: 2 },
+      { y: 10, x: 7 },
+      { y: 10, x: 9 },
+      { y: 10, x: 14 },
+      { y: 11, x: 2 },
+      { y: 11, x: 7 },
+      { y: 11, x: 9 },
+      { y: 11, x: 14 },
+      { y: 12, x: 2 },
+      { y: 12, x: 7 },
+      { y: 12, x: 9 },
+      { y: 12, x: 14 },
 
-        { y: 14, x: 4 },
-        { y: 14, x: 5 },
-        { y: 14, x: 6 },
-        { y: 14, x: 10 },
-        { y: 14, x: 11 },
-        { y: 14, x: 12 },
-
-      ];
+      { y: 14, x: 4 },
+      { y: 14, x: 5 },
+      { y: 14, x: 6 },
+      { y: 14, x: 10 },
+      { y: 14, x: 11 },
+      { y: 14, x: 12 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -501,35 +404,33 @@ describe("Test Oscillators", function () {
     const log = false;
     const start = { y: 0, x: 0 };
     const end = { y: 17, x: 10 };
-    const generation0 =
-      [
-        { y: 3, x: 4 },
-        { y: 3, x: 5 },
-        { y: 3, x: 6 },
+    const generation0 = [
+      { y: 3, x: 4 },
+      { y: 3, x: 5 },
+      { y: 3, x: 6 },
 
-        { y: 4, x: 3 },
-        { y: 4, x: 7 },
-        { y: 5, x: 3 },
-        { y: 5, x: 7 },
+      { y: 4, x: 3 },
+      { y: 4, x: 7 },
+      { y: 5, x: 3 },
+      { y: 5, x: 7 },
 
-        { y: 6, x: 4 },
-        { y: 6, x: 5 },
-        { y: 6, x: 6 },
+      { y: 6, x: 4 },
+      { y: 6, x: 5 },
+      { y: 6, x: 6 },
 
-        { y: 11, x: 4 },
-        { y: 11, x: 5 },
-        { y: 11, x: 6 },
+      { y: 11, x: 4 },
+      { y: 11, x: 5 },
+      { y: 11, x: 6 },
 
-        { y: 12, x: 3 },
-        { y: 12, x: 7 },
-        { y: 13, x: 3 },
-        { y: 13, x: 7 },
+      { y: 12, x: 3 },
+      { y: 12, x: 7 },
+      { y: 13, x: 3 },
+      { y: 13, x: 7 },
 
-        { y: 14, x: 4 },
-        { y: 14, x: 5 },
-        { y: 14, x: 6 },
-
-      ];
+      { y: 14, x: 4 },
+      { y: 14, x: 5 },
+      { y: 14, x: 6 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -565,25 +466,22 @@ describe("Test Oscillators", function () {
     // Then
     expect(generation15.sort(comparePositions)).toEqual(generation0.sort(comparePositions));
   });
-
 });
 
 describe("Test Spaceships", function () {
-
   it("Glider", function () {
     // Given
     const log = false;
     const start = { y: -1, x: -1 };
     const end = { y: 4, x: 4 };
     const shift = { y: 1, x: 1 };
-    const generation0 =
-      [
-        { y: 0, x: 2 },
-        { y: 1, x: 0 },
-        { y: 1, x: 2 },
-        { y: 2, x: 1 },
-        { y: 2, x: 2 },
-      ];
+    const generation0 = [
+      { y: 0, x: 2 },
+      { y: 1, x: 0 },
+      { y: 1, x: 2 },
+      { y: 2, x: 1 },
+      { y: 2, x: 2 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -604,18 +502,17 @@ describe("Test Spaceships", function () {
     const start = { y: -1, x: 0 };
     const end = { y: 4, x: 7 };
     const shift = { y: 0, x: 2 };
-    const generation0 =
-      [
-        { y: 0, x: 0 },
-        { y: 0, x: 3 },
-        { y: 1, x: 4 },
-        { y: 2, x: 0 },
-        { y: 2, x: 4 },
-        { y: 3, x: 1 },
-        { y: 3, x: 2 },
-        { y: 3, x: 3 },
-        { y: 3, x: 4 },
-      ];
+    const generation0 = [
+      { y: 0, x: 0 },
+      { y: 0, x: 3 },
+      { y: 1, x: 4 },
+      { y: 2, x: 0 },
+      { y: 2, x: 4 },
+      { y: 3, x: 1 },
+      { y: 3, x: 2 },
+      { y: 3, x: 3 },
+      { y: 3, x: 4 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -636,20 +533,19 @@ describe("Test Spaceships", function () {
     const start = { y: -2, x: 0 };
     const end = { y: 4, x: 7 };
     const shift = { y: 0, x: 2 };
-    const generation0 =
-      [
-        { y: 0, x: 1 },
-        { y: 0, x: 2 },
-        { y: 0, x: 3 },
-        { y: 0, x: 4 },
-        { y: 0, x: 5 },
-        { y: 1, x: 0 },
-        { y: 1, x: 5 },
-        { y: 2, x: 5 },
-        { y: 3, x: 0 },
-        { y: 3, x: 4 },
-        { y: 4, x: 2 },
-      ];
+    const generation0 = [
+      { y: 0, x: 1 },
+      { y: 0, x: 2 },
+      { y: 0, x: 3 },
+      { y: 0, x: 4 },
+      { y: 0, x: 5 },
+      { y: 1, x: 0 },
+      { y: 1, x: 5 },
+      { y: 2, x: 5 },
+      { y: 3, x: 0 },
+      { y: 3, x: 4 },
+      { y: 4, x: 2 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -670,22 +566,21 @@ describe("Test Spaceships", function () {
     const start = { y: 0, x: 0 };
     const end = { y: 6, x: 8 };
     const shift = { y: 0, x: 2 };
-    const generation0 =
-      [
-        { y: 0, x: 2 },
-        { y: 0, x: 3 },
-        { y: 1, x: 0 },
-        { y: 1, x: 5 },
-        { y: 2, x: 6 },
-        { y: 3, x: 0 },
-        { y: 3, x: 6 },
-        { y: 4, x: 1 },
-        { y: 4, x: 2 },
-        { y: 4, x: 3 },
-        { y: 4, x: 4 },
-        { y: 4, x: 5 },
-        { y: 4, x: 6 },
-      ];
+    const generation0 = [
+      { y: 0, x: 2 },
+      { y: 0, x: 3 },
+      { y: 1, x: 0 },
+      { y: 1, x: 5 },
+      { y: 2, x: 6 },
+      { y: 3, x: 0 },
+      { y: 3, x: 6 },
+      { y: 4, x: 1 },
+      { y: 4, x: 2 },
+      { y: 4, x: 3 },
+      { y: 4, x: 4 },
+      { y: 4, x: 5 },
+      { y: 4, x: 6 },
+    ];
     displayGame(generation0, start, end, log);
     // When
     let generation1 = gameOfLife(generation0);
@@ -699,12 +594,10 @@ describe("Test Spaceships", function () {
     // Then
     expect(generation4.sort(comparePositions)).toEqual(shiftGame(generation0, shift).sort(comparePositions));
   });
-
 });
 
-function displayGame(game: Array<Position>, start: Position, end: Position, log: boolean) {
-  if (!log)
-    return;
+function displayGame(game: Position[], start: Position, end: Position, log: boolean) {
+  if (!log) return;
 
   let dy = end.y - start.y + 1;
   let dx = end.x - start.x + 1;
@@ -728,12 +621,12 @@ function displayGame(game: Array<Position>, start: Position, end: Position, log:
       else string += "* ";
     });
     string += "-\n";
-  })
+  });
 
   console.log(string);
 }
 
-function shiftGame(game: Array<Position>, shift: Position): Array<Position> {
+function shiftGame(game: Position[], shift: Position): Position[] {
   return game.map((position) => {
     return { y: position.y + shift.y, x: position.x + shift.x };
   });
